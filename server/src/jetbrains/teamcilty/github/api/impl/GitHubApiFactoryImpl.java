@@ -16,8 +16,10 @@
 
 package jetbrains.teamcilty.github.api.impl;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.teamcilty.github.api.GitHubApi;
 import jetbrains.teamcilty.github.api.GitHubApiFactory;
+import jetbrains.teamcilty.github.util.LoggerHelper;
 import org.apache.http.HttpRequest;
 import org.apache.http.auth.AuthenticationException;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -43,10 +45,13 @@ public class GitHubApiFactoryImpl implements GitHubApiFactory {
     return new GitHubApiImpl(myWrapper, new GitHubApiPaths(url)){
       @Override
       protected void setAuthentication(@NotNull HttpRequest request) throws AuthenticationException {
+        LOG.info("Using BasicScheme for " + url);
         request.addHeader(new BasicScheme().authenticate(new UsernamePasswordCredentials(username, password), request));
       }
     };
   }
+
+  private static final Logger LOG = LoggerHelper.getInstance(GitHubApiFactoryImpl.class);
 
   @NotNull
   public GitHubApi openGitHubForToken(@NotNull final String url,
@@ -54,8 +59,9 @@ public class GitHubApiFactoryImpl implements GitHubApiFactory {
     return new GitHubApiImpl(myWrapper, new GitHubApiPaths(url)){
       @Override
       protected void setAuthentication(@NotNull HttpRequest request) throws AuthenticationException {
+        LOG.info("Using OAuthTokenScheme for " + url);
         //NOTE: This auth could also be done via HTTP header
-        request.addHeader(new BasicScheme().authenticate(new UsernamePasswordCredentials(token, "x-oauth-basic"), request));
+        request.addHeader(new OAuthTokenScheme().authenticate(token, request));
       }
     };
   }
