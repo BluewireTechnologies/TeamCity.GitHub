@@ -106,6 +106,7 @@ public abstract class GitHubApiImpl implements GitHubApi {
   }
 
   private void setDefaultHeaders(@NotNull HttpUriRequest request) {
+    request.setHeader(new BasicHeader(HttpHeaders.USER_AGENT, "TeamCity-GitHub"));
     request.setHeader(new BasicHeader(HttpHeaders.ACCEPT_ENCODING, "UTF-8"));
     request.setHeader(new BasicHeader(HttpHeaders.ACCEPT, "application/json"));
   }
